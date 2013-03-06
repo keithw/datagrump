@@ -39,8 +39,8 @@ Packet::Packet( const Address & addr, const uint64_t sequence_number,
 }
 
 /* Make incoming packet from wire */
-Packet::Packet( const Address & addr, const std::string & str,
-			 const struct timespec & receive_ts )
+Packet::Packet( const Address & addr, const string & str,
+		const struct timespec & receive_ts )
   : addr_( addr ),
     sequence_number_( str.substr( 0*sizeof( uint64_t ), sizeof( uint64_t ) ) ),
     send_timestamp_( str.substr( 1*sizeof( uint64_t ), sizeof( uint64_t ) ) ),
@@ -62,11 +62,17 @@ void Packet::set_send_timestamp( void )
 }
 
 /* Make wire representation of packet */
-std::string Packet::str( void ) const
+string Packet::str( void ) const
 {
-  return sequence_number_.str()
+  string ret = sequence_number_.str()
     + send_timestamp_.str()
     + ack_sequence_number_.str()
     + ack_send_timestamp_.str()
     + ack_recv_timestamp_.str();
+
+  assert( ret.size() <= PACKET_SIZE );
+
+  string extra = string( PACKET_SIZE - ret.size(), 'x' );
+
+  return ret + extra;
 }

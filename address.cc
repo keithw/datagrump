@@ -27,6 +27,12 @@ std::string Address::ip( void ) const
   return string( tmp );
 }
 
+/* Get underlying port number */
+uint16_t Address::port( void ) const
+{
+  return ntohs( sockaddr_.sin_port );
+}
+
 /* Render address to string */
 const string Address::str( void ) const
 {

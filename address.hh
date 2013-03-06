@@ -28,6 +28,9 @@ namespace Network {
     /* Get underlying IP address */
     std::string ip( void ) const;
 
+    /* Get underlying port number */
+    uint16_t port( void ) const;
+
     /* Compare two addresses */
     bool operator==( const Address & other ) const
     {
