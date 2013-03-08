@@ -22,9 +22,16 @@ namespace Network {
     Integer64 ack_send_timestamp_;
     Integer64 ack_recv_timestamp_;
 
+    static const unsigned int HEADER_SIZE = sizeof( Integer64 ) * 5;
+    static const unsigned int DATA_PACKET_SIZE = 1480;
+
     /* This field is filled in on receipt, and is not
        transmitted over the wire */
     Integer64 recv_timestamp_;
+
+    /* Length of the payload when the packet is transmitted.
+       In Datagrump the payload is just filled with garbage data. */
+    unsigned int payload_len_;
 
   public:
     /* Make outgoing data packet */
@@ -59,9 +66,10 @@ namespace Network {
     uint64_t ack_recv_timestamp( void ) const
     { return ack_recv_timestamp_.int64(); }
 
+    unsigned int payload_len( void ) const { return payload_len_; }
+
     /* An ACK has an ack_sequence_number less than 2^64 - 1. */
-    bool is_ack( void ) const
-    { return ack_sequence_number() != uint64_t( -1 ); }
+    bool is_ack( void ) const;
   };
 }
 

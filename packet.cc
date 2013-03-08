@@ -7,8 +7,6 @@
 using namespace std;
 using namespace Network;
 
-static const uint64_t PACKET_SIZE = 1480;
-
 /* Make outgoing data packet */
 Packet::Packet( const Address & addr, const uint64_t sequence_number )
   : addr_( addr ),
@@ -17,7 +15,8 @@ Packet::Packet( const Address & addr, const uint64_t sequence_number )
     ack_sequence_number_( -1 ),
     ack_send_timestamp_(),
     ack_recv_timestamp_(),
-    recv_timestamp_()
+    recv_timestamp_(),
+    payload_len_( DATA_PACKET_SIZE - HEADER_SIZE )
 {
   assert( !is_ack() );
 }
@@ -33,7 +32,8 @@ Packet::Packet( const Address & addr, const uint64_t sequence_number,
     ack_sequence_number_( ack_sequence_number ),
     ack_send_timestamp_( ack_send_timestamp ),
     ack_recv_timestamp_( ack_recv_timestamp ),
-    recv_timestamp_()
+    recv_timestamp_(),
+    payload_len_( 0 )
 {
   assert( is_ack() );
 }
@@ -42,16 +42,22 @@ Packet::Packet( const Address & addr, const uint64_t sequence_number,
 Packet::Packet( const Address & addr, const string & str,
 		const struct timespec & receive_ts )
   : addr_( addr ),
-    sequence_number_( str.substr( 0*sizeof( uint64_t ), sizeof( uint64_t ) ) ),
-    send_timestamp_( str.substr( 1*sizeof( uint64_t ), sizeof( uint64_t ) ) ),
-    ack_sequence_number_( str.substr( 2*sizeof(uint64_t), sizeof(uint64_t) ) ),
-    ack_send_timestamp_( str.substr( 3*sizeof(uint64_t), sizeof(uint64_t) ) ),
-    ack_recv_timestamp_( str.substr( 4*sizeof(uint64_t), sizeof(uint64_t) ) ),
-    recv_timestamp_( timestamp( receive_ts ) )
+    sequence_number_(), send_timestamp_(),
+    ack_sequence_number_(), ack_send_timestamp_(),
+    ack_recv_timestamp_(),
+    recv_timestamp_( timestamp( receive_ts ) ),
+    payload_len_()
 {
-  if ( str.size() != PACKET_SIZE ) {
-    throw string( "Invalid packet size." );
+  if ( str.size() < HEADER_SIZE ) {
+    throw string( "Incoming datagram not long enough to decode." );
   }
+
+  sequence_number_ = str.substr( 0*sizeof( uint64_t ), sizeof( uint64_t ) );
+  send_timestamp_ = str.substr( 1*sizeof( uint64_t ), sizeof( uint64_t ) );
+  ack_sequence_number_ = str.substr( 2*sizeof(uint64_t), sizeof(uint64_t) );
+  ack_send_timestamp_ = str.substr( 3*sizeof(uint64_t), sizeof(uint64_t) );
+  ack_recv_timestamp_ = str.substr( 4*sizeof(uint64_t), sizeof(uint64_t) );
+  payload_len_ = str.size() - HEADER_SIZE;
 }
 
 /* Prepare to send */
@@ -68,11 +74,22 @@ string Packet::str( void ) const
     + send_timestamp_.str()
     + ack_sequence_number_.str()
     + ack_send_timestamp_.str()
-    + ack_recv_timestamp_.str();
+    + ack_recv_timestamp_.str()
+    + string( payload_len_, 'x' );
 
-  assert( ret.size() <= PACKET_SIZE );
+  assert( ret.size() <= DATA_PACKET_SIZE );
 
-  string extra = string( PACKET_SIZE - ret.size(), 'x' );
+  return ret;
+}
 
-  return ret + extra;
+/* An ACK has an ack_sequence_number less than 2^64 - 1. */
+bool Packet::is_ack( void ) const
+{
+  if ( ack_sequence_number() == uint64_t( -1 ) ) {
+    return false;
+  }
+
+  /* It's an ACK. */
+  assert( payload_len_ == 0 );
+  return true;
 }
