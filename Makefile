@@ -1,7 +1,8 @@
 source = socket.cc address.cc packet.cc int64.cc timestamp.cc \
-	datagrump-sender.cc datagrump-receiver.cc
+	datagrump-sender.cc datagrump-receiver.cc \
+	util.cc
 
-objects = socket.o address.o packet.o int64.o timestamp.o
+objects = socket.o address.o packet.o int64.o timestamp.o util.o
 
 executables = datagrump-sender datagrump-receiver
 

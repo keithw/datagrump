@@ -2,20 +2,33 @@
 #include <arpa/inet.h>
 
 #include "address.hh"
+#include "util.hh"
 
 using namespace std;
 using namespace Network;
 
 /* Construct address from IP address and port number */
-Address::Address( const string ip, const uint16_t port )
+Address::Address( const string ip, const string port )
   : sockaddr_()
 {
   sockaddr_.sin_family = AF_INET;
-  sockaddr_.sin_port = htons( port );
 
+  /* Convert IP address */
   if ( inet_aton( ip.c_str(), &sockaddr_.sin_addr ) == 0 ) {
     fprintf( stderr, "Invalid IP address (%s)\n", ip.c_str() );
-    exit( 1 );
+    throw string( "Invalid IP address." );
+  }
+
+  /* Convert port */
+  try {
+    long int the_port = myatoi( port.c_str() );
+    if ( (the_port < 0) || (the_port > 65535) ) {
+      throw string( "Port out of valid range." );
+    }
+    sockaddr_.sin_port = htons( the_port );
+  } catch ( const string & exception ) {
+    fprintf( stderr, "Bad port number %s (%s)\n", port.c_str(), exception.c_str() );
+    throw;
   }
 }
 

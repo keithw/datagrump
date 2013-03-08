@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <unistd.h>
+#include <string>
 
 #include "socket.hh"
 
+using namespace std;
 using namespace Network;
 
 int main( int argc, char *argv[] )
@@ -13,24 +15,27 @@ int main( int argc, char *argv[] )
     exit( 1 );
   }
 
-  char *ip = argv[ 1 ];
-  uint16_t port = atoi( argv[ 2 ] );
+  try {
+    /* Fill in destination address from command line arguments */
+    Address destination( argv[ 1 ] /* ip */, argv[ 2 ] /* port */ );
 
-  Address destination( ip, port );
+    fprintf( stderr, "Sending packets to %s:%d.\n",
+	     destination.ip().c_str(), destination.port() );
 
-  fprintf( stderr, "Sending packets to %s:%d.\n",
-	   destination.ip().c_str(), destination.port() );
+    /* Create UDP socket for outgoing datagrams. */
+    Network::Socket sock;
 
-  Network::Socket sock;
-
-  uint64_t sequence_number = 0;
-
-  while ( 1 ) {
-    Packet x( destination, sequence_number );
-
-    sock.send( x );	       
-
-    sleep( 1 );
+    /* Loop */
+    uint64_t sequence_number = 0;
+    while ( 1 ) {
+      Packet x( destination, sequence_number++ );
+      sock.send( x );
+      sleep( 1 );
+    }
+  } catch ( const string & exception ) {
+    /* We got an exception, so quit. */
+    fprintf( stderr, "Exiting on exception: %s\n", exception.c_str() );
+    exit( 1 );
   }
 
   return 0;

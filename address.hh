@@ -14,7 +14,7 @@ namespace Network {
 
   public:
     /* Construct from IP address and port number */
-    Address( const std::string ip, const uint16_t port );
+    Address( const std::string ip, const std::string port );
 
     /* Construct from sockaddr_in */
     Address( const struct sockaddr_in s_sockaddr ) : sockaddr_( s_sockaddr ) {}
