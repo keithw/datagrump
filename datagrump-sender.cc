@@ -12,8 +12,13 @@ using namespace Network;
 int main( int argc, char *argv[] )
 {
   /* check arguments */
-  if ( argc != 3 ) {
-    fprintf( stderr, "Usage: %s IP PORT\n", argv[ 0 ] );
+  bool debug = false;
+  if ( argc == 4 && string( argv[ 3 ] ) == "debug" ) {
+    debug = true;
+  } else if ( argc == 3 ) {
+    /* do nothing */
+  } else {
+    fprintf( stderr, "Usage: %s IP PORT [debug]\n", argv[ 0 ] );
     exit( 1 );
   }
 
@@ -32,7 +37,7 @@ int main( int argc, char *argv[] )
     uint64_t next_ack_expected = 0;
 
     /* Initialize flow controller */
-    Controller controller;
+    Controller controller( debug );
 
     /* Loop */
     while ( 1 ) {

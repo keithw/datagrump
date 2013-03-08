@@ -8,6 +8,8 @@
 class Controller
 {
 private:
+  bool debug_; /* Enables debugging output */
+
   /* Add member variables here */
 
 public:
@@ -16,7 +18,7 @@ public:
      the call site as well (in datagrump-sender.cc) */
 
   /* Default constructor */
-  Controller();
+  Controller( const bool debug );
 
   /* Get current window size, in packets */
   unsigned int window_size( void );

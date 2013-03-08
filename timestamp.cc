@@ -8,9 +8,16 @@
 using namespace std;
 using namespace Network;
 
-/* nanoseconds per second */
-static const uint64_t BILLION = 1000000000;
+/* nanoseconds per millisecond */
+static const uint64_t MILLION = 1000000;
 
+/* nanoseconds per second */
+static const uint64_t BILLION = 1000 * MILLION;
+
+/* 6.829 epoch */
+static const uint64_t EPOCH = 1362700000000;
+
+/* Current time in milliseconds since the epoch */
 uint64_t Network::timestamp( void )
 {
   struct timespec ts;
@@ -20,10 +27,11 @@ uint64_t Network::timestamp( void )
     throw string( "clock_gettime error" );
   }
 
-  return ts.tv_sec * BILLION + ts.tv_nsec;
+  return timestamp( ts );
 }
 
 uint64_t Network::timestamp( const struct timespec & ts )
 {
-  return ts.tv_sec * BILLION + ts.tv_nsec;
+  const uint64_t nanos = ts.tv_sec * BILLION + ts.tv_nsec;
+  return nanos / MILLION - EPOCH;
 }
