@@ -27,7 +27,7 @@ namespace Network {
     Packet recv( void ) const;
 
     /* Getter for underlying socket fd */
-    int sock( void ) const { return sock_; }
+    int fd( void ) const { return sock_; }
   };
 }
 

@@ -1,13 +1,14 @@
 source = socket.cc address.cc packet.cc int64.cc timestamp.cc \
 	datagrump-sender.cc datagrump-receiver.cc \
-	util.cc
+	util.cc controller.cc
 
-objects = socket.o address.o packet.o int64.o timestamp.o util.o
+objects = socket.o address.o packet.o int64.o timestamp.o util.o controller.o
 
 executables = datagrump-sender datagrump-receiver
 
 CXX = g++
-CXXFLAGS = -g -O3 -std=c++0x -ffast-math -pedantic -Werror -Wall -Wextra -Weffc++ -fno-default-inline -pipe
+CXXFLAGS = -g -O3 -std=c++0x -ffast-math -pedantic -Werror -Wall -Wextra \
+	-Weffc++ -fno-default-inline -pipe
 LIBS = -lm -lrt
 
 all: $(executables)
