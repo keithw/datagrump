@@ -23,15 +23,13 @@ Packet::Packet( const Address & addr, const uint64_t sequence_number )
 
 /* Make ACK */
 Packet::Packet( const Address & addr, const uint64_t sequence_number,
-		const uint64_t ack_sequence_number,
-		const uint64_t ack_send_timestamp,
-		const uint64_t ack_recv_timestamp )
+		const Packet & other )
   : addr_( addr ),
     sequence_number_( sequence_number ),
     send_timestamp_(),
-    ack_sequence_number_( ack_sequence_number ),
-    ack_send_timestamp_( ack_send_timestamp ),
-    ack_recv_timestamp_( ack_recv_timestamp ),
+    ack_sequence_number_( other.sequence_number() ),
+    ack_send_timestamp_( other.send_timestamp() ),
+    ack_recv_timestamp_( other.recv_timestamp() ),
     recv_timestamp_(),
     payload_len_( 0 )
 {

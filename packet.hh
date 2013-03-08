@@ -39,9 +39,7 @@ namespace Network {
 
     /* Make ACK */
     Packet( const Address & addr, const uint64_t sequence_number,
-	    const uint64_t ack_sequence_number,
-	    const uint64_t ack_send_timestamp,
-	    const uint64_t ack_recv_timestamp );
+	    const Packet & other );
 
     /* Make incoming packet from wire */
     Packet( const Address & addr, const std::string & str,

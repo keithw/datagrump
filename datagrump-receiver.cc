@@ -24,12 +24,13 @@ int main( int argc, char *argv[] )
     fprintf( stderr, "Listening on port %s...\n", argv[ 1 ] );
 
     /* Loop */
+    uint64_t sequence_number = 0;
     while ( 1 ) {
-      Packet x = sock.recv();
-      fprintf( stderr, "Got packet %u from %s (payload length = %u).\n",
-	       (unsigned int) x.sequence_number(),
-	       x.addr().ip().c_str(),
-	       x.payload_len() );
+      Packet received_packet = sock.recv();
+
+      /* Send back acknowledgment */
+      Packet ack( received_packet.addr(), sequence_number++, received_packet );
+      sock.send( ack );
     }
   } catch ( const string & exception ) {
     /* We got an exception, so quit. */
