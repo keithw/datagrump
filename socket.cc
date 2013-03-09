@@ -61,6 +61,7 @@ void Socket::send( Packet & packet ) const
 
   if ( bytes_sent != static_cast<ssize_t>( payload.size() ) ) {
     perror( "sendto" );
+    throw string( "sendto error" );
   }
 }
 
