@@ -23,7 +23,7 @@ namespace Network {
     Integer64 ack_recv_timestamp_;
 
     static const unsigned int HEADER_SIZE = sizeof( Integer64 ) * 5;
-    static const unsigned int DATA_PACKET_SIZE = 1480;
+    static const unsigned int DATA_PACKET_SIZE = 1472;
 
     /* This field is filled in on receipt, and is not
        transmitted over the wire */
